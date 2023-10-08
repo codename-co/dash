@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8" />
+  <title>Dash</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22white%22>🄳</text></svg>"
+  />
+  <link rel="stylesheet" href="/ui/style.css" />
+  <script type="module" src="/ui/script.js"></script>
+
+  <section>
+    <details>
+      <summary tabindex="-1">⚙ settings</summary>
+      <label class="service" style="display: inline-block">
+        <input type="checkbox" id="toggleAll" />
+        show all containers
+      </label>
+    </details>
+    <input id="search" placeholder="search" autocomplete="off" />
+    <h1>dash</h1>
+    <div id="render"></div>
+  </section>
+</html>
