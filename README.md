@@ -10,7 +10,8 @@
 - ⚡ Blazing-**fast**
 - 🪶 **Extra light** Docker image (~7MB)
 - 🛡️ **Robust** typed codebase
-- 🟢 Service status
+- 🟢 **Health check** compliant
+- 👩‍🎨 **Integration** of 2k+ icons of tech stacks
 - 🔍 **Search** services by name, image
 - 🔄 **Responsive** user interface
 - 💄 **Themable**

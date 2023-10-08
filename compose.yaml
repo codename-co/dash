@@ -4,11 +4,9 @@ services:
   dash:
     build:
       context: .
-    ports:
-      - 8585:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      PROJECT: dash
+      PROJECT: ${COMPOSE_PROJECT_NAME}
     labels:
       dev.orbstack.domains: dash.local

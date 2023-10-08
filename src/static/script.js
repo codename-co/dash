@@ -31,19 +31,22 @@ const fetchContainers = async (all = false) => (await fetch(api(`/containers${al
 const isFetchAll = () => sessionStorage.getItem('all') === 'true'
 
 /** @argument {boolean?} value */
-const setFetchAll = async (value = !isFetchAll()) => sessionStorage.setItem('all', value)
+const setFetchAll = async (value = !isFetchAll()) => sessionStorage.setItem('all', String(value))
 
 const update = async () => {
   const state = await fetchContainers(await isFetchAll())
 
   const projects = Array.from(state.reduce((acc, c) => acc.add(projectName(c)), new Set()))
 
+  /** @type {Record<string, Container[]>} */
+  const containersInit = {}
+
   /** @type {{ containers: Record<string, Container[]> }} */
   const data = {
     containers: state.reduce((acc, c) => {
       const project = projectName(c)
       return { ...acc, [project]: [...(acc[project] || []), c] }
-    }, {}),
+    }, containersInit),
   }
 
   console.log(data)
