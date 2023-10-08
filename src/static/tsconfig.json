@@ -2,9 +2,10 @@
   "compilerOptions": {
     "module": "esnext",
     "lib": ["dom", "dom.iterable", "esnext", "ES2017"],
+    "target": "ESNext",
     "checkJs": true,
     "strict": true,
     "noEmit": true
   },
-  "include": ["src"]
+  "include": ["dash.d.ts", "js"]
 }

@@ -16,6 +16,8 @@ LABEL org.opencontainers.image.description "A minimalist Docker landing page wit
 LABEL org.opencontainers.image.url="https://github.com/codename-co/dash"
 LABEL org.opencontainers.image.documentation='https://github.com/codename-co/dash/wiki'
 LABEL org.opencontainers.image.source='https://github.com/codename-co/dash'
+LABEL org.opencontainers.image.vendor='codename'
+LABEL org.opencontainers.image.authors='https://codename.co'
 LABEL org.opencontainers.image.licenses='MIT'
 
 COPY --from=builder /dash /dash

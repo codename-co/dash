@@ -6,7 +6,9 @@ services:
       context: .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      PROJECT: ${COMPOSE_PROJECT_NAME}
+    # environment:
+    #   PROJECT: ${COMPOSE_PROJECT_NAME}
+    #   THEME: dark
+    #   UPDATE_INTERVAL: 2000
     labels:
       dev.orbstack.domains: dash.local

@@ -1,13 +1,62 @@
-:root {
-  --fg: #333;
-  --bg: #fff;
-  --success: green;
-  --error: red;
-
-  --fg: #fff;
+:root,
+[data-theme='dark'] {
   --bg: #234;
+  --fg: #fff;
   --success: #5d5;
   --error: #e55;
+  --icon: #fff;
+  --service-blend-mode: screen;
+}
+
+[data-theme='rainbow'] {
+  --bg: linear-gradient(60deg, rgba(84, 58, 183, 1) 0%, rgba(0, 172, 193, 1) 100%);
+  --fg: #fff;
+  --success: #5d5;
+  --error: #e55;
+  --icon: #fff;
+}
+
+[data-theme='light'] {
+  --bg: #fff;
+  --fg: #333;
+  --success: green;
+  --error: red;
+  --icon: respect;
+  --service-blend-mode: normal;
+}
+
+[data-theme='colorful'] {
+  --bg: #ff659c;
+  --fg: #3c2149;
+  --success: #018201;
+  --error: red;
+  --icon: #000;
+  --service-blend-mode: normal;
+}
+
+[data-theme='highcontrast'] {
+  --bg: #000;
+  --fg: #fff;
+  --success: green;
+  --error: red;
+  --icon: #fff;
+}
+
+[data-theme='pastel'] {
+  --bg: #ff8080;
+  --fg: #f6fdc3;
+  --success: #4ed065;
+  --error: #ff8080;
+  --icon: #fff;
+}
+
+[data-theme='neon'] {
+  --bg: #08d9d6;
+  --fg: #252a34;
+  --success: #00981b;
+  --error: #ff2e63;
+  --icon: #888;
+  --service-blend-mode: normal;
 }
 
 @font-face {
@@ -24,6 +73,8 @@ html {
   outline: 1em solid var(--fg);
   border: 1em solid var(--fg);
   border-radius: 2em;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 html,
@@ -31,7 +82,6 @@ body {
   min-height: 100%;
 }
 body {
-  /* background: linear-gradient(-20deg, #cbdd0020, #fffef420); */
   background: var(--bg);
   color: var(--fg);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
@@ -41,16 +91,6 @@ body {
   font-size: 1.2em;
   font-size: max(1.1em, 1vh);
   user-select: none;
-}
-body::before {
-  content: '';
-  position: fixed;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* background: linear-gradient(20deg, #00ccdd30, #f4f4ff30); */
 }
 
 [data-before]::before {
@@ -69,6 +109,10 @@ h1 {
 
 label {
   cursor: pointer;
+}
+
+.is-small {
+  font-size: 0.7em;
 }
 
 #search {
@@ -99,6 +143,10 @@ summary {
   cursor: pointer;
   opacity: 0.7;
 }
+summary:hover,
+details[open] summary {
+  opacity: 1;
+}
 
 section {
   max-width: 75vw;
@@ -111,10 +159,11 @@ section {
   gap: 1em;
 }
 
-.service {
+.card {
   position: relative;
   padding: 0.6em 1.2em;
   background: #77777720;
+  mix-blend-mode: var(--service-blend-mode);
   border-radius: 4px;
   margin-bottom: 1rem;
   display: grid;
@@ -122,15 +171,25 @@ section {
   gap: 1em;
   text-decoration: none;
 }
-.service[href]:hover {
+.card[href]:hover {
   background: #77777736;
 }
-.service .icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(100);
+.card * {
+  pointer-events: none;
 }
-.service .name {
+.service .icon {
+  width: 20px;
+  height: 20px;
+}
+.service .icon > span {
+  fill: var(--icon) !important;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+}
+.card .name {
   grid-column: 2;
   grid-row: 1;
   white-space: nowrap;
@@ -140,7 +199,6 @@ section {
 .service .image {
   grid-column: 2;
   grid-row: 2;
-  font-size: 0.7em;
 }
 .service .status {
   grid-column: 3;
@@ -151,10 +209,13 @@ section {
   grid-column: 3;
   grid-row: 2;
   text-align: right;
-  font-size: 0.7em;
 }
 .service:hover .link {
   text-decoration: underline;
+}
+.service .networks {
+  grid-column: 2;
+  grid-row: 3;
 }
 
 .status-paused::after,
@@ -183,4 +244,33 @@ section {
   to {
     opacity: 0;
   }
+}
+
+.project.is-highlighting .is-highlighted::after {
+  content: '';
+  display: inline-block;
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  margin: 0 auto;
+  width: 8px;
+  margin-left: -8px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background: #ffffff33;
+}
+.project.is-highlighting .service:not(.is-highlighted) {
+  opacity: 0.3;
+}
+.project.is-highlighting .service.is-highlighted {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.project .network {
+  display: none;
+}
+.project.is-highlighting .network.is-highlighted {
+  display: block;
 }

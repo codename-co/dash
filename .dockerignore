@@ -1,1 +1,3 @@
 **/.DS_Store
+src/static/*.d.ts
+src/static/tsconfig.json

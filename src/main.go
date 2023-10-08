@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/volume"
@@ -20,8 +21,18 @@ func cli() *client.Client {
 	return cli
 }
 
-func Index(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/ui/")
+func Health(c echo.Context) error {
+	return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+}
+
+func Config(c echo.Context) error {
+	config := make(map[string]string)
+	for _, e := range os.Environ() {
+		parts := strings.Split(e, "=")
+		config[parts[0]] = parts[1]
+	}
+
+	return c.JSON(http.StatusOK, config)
 }
 
 func DockerIndex(c echo.Context) error {
@@ -71,7 +82,23 @@ func DockerContainers(c echo.Context) error {
 		panic(err)
 	}
 
-	return c.JSON(http.StatusOK, containers)
+	var filteredContainers []types.Container = containers
+
+	project := os.Getenv("PROJECT")
+	if project != "" {
+		filteredContainers = nil
+		for _, c := range containers {
+			var _project = c.Labels["com.docker.compose.project"]
+			if len(_project) == 0 {
+				_project = "default"
+			}
+			if _project == project {
+				filteredContainers = append(filteredContainers, c)
+			}
+		}
+	}
+
+	return c.JSON(http.StatusOK, filteredContainers)
 }
 
 func DockerNetworks(c echo.Context) error {
@@ -92,6 +119,10 @@ func DockerVolumes(c echo.Context) error {
 	return c.JSON(http.StatusOK, volumes)
 }
 
+func Index(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/ui/")
+}
+
 func main() {
 	e := echo.New()
 
@@ -101,11 +132,9 @@ func main() {
 
 	// e.GET("/", Index)
 
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
-	})
-
 	e.GET("/", Index)
+	e.GET("/health", Health)
+	e.GET("/api/config", Config)
 	e.GET("/api/docker", DockerIndex)
 	e.GET("/api/docker/containers", DockerContainers)
 	e.GET("/api/docker/networks", DockerNetworks)
