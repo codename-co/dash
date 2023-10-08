@@ -222,4 +222,8 @@ initSearch()
 initToggleAll()
 update()
 
-// setInterval(update, 1000)
+setInterval(() => {
+  if (document.hasFocus()) {
+    update()
+  }
+}, 2000)
