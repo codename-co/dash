@@ -126,6 +126,8 @@ section {
   background: #77777736;
 }
 .service .icon {
+  width: 18px;
+  height: 18px;
   filter: brightness(100);
 }
 .service .name {

@@ -65,11 +65,9 @@ const update = async () => {
                     <span class="status">
                       ${serviceStatus(c)}
                     </span>
-                    <span class="icon">
-                      <img src="${serviceIcon(
-                        c
-                      )}" onerror="this.onerror=null;this.src='https://cdn.simpleicons.org/docker'" />
-                    </span>
+                    <img class="icon" src="${serviceIcon(
+                      c
+                    )}" onerror="this.onerror=null;this.src='https://cdn.simpleicons.org/docker'" />
                     <span class="name">
                       ${serviceName(c)}
                     </span>
