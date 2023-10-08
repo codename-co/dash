@@ -1,6 +1,6 @@
 # Dash
 
-`dash` is a drop-in minimalist Docker dashboard with services auto-discovery.
+`dash` is a drop-in minimalist Docker landing page with services auto-discovery.
 
 ![dash screenshot](./docs/dash-home-1.webp)
 
@@ -8,7 +8,7 @@
 
 - 🐳 **Automatic** Docker services discovery
 - ⚡ Blazing-**fast**
-- 🪶 **Light** Docker image (~10MB)
+- 🪶 **Extra light** Docker image (~7MB)
 - 🛡️ **Robust** typed codebase
 - 🟢 Service status
 - 🔍 **Search** services by name, image

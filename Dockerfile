@@ -9,7 +9,14 @@ COPY src/*.go .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /dash
 
 
-FROM scratch
+FROM scratch AS runner
+
+LABEL org.opencontainers.image.title "Dash"
+LABEL org.opencontainers.image.description "A minimalist Docker landing page with services auto-discovery."
+LABEL org.opencontainers.image.url="https://github.com/codename-co/dash"
+LABEL org.opencontainers.image.documentation='https://github.com/codename-co/dash/wiki'
+LABEL org.opencontainers.image.source='https://github.com/codename-co/dash'
+LABEL org.opencontainers.image.licenses='MIT'
 
 COPY --from=builder /dash /dash
 
