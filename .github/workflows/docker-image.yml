@@ -3,8 +3,19 @@ name: Docker Image CI
 on:
   push:
     branches: ['main']
+    # Publish semver tags as releases.
+    tags: ['v*.*.*']
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: ['main']
+    paths-ignore:
+      - 'docs/**'
+  merge_group:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: codename/dash
 
 jobs:
   build:
@@ -21,10 +32,23 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=auto
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codename/dash:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
