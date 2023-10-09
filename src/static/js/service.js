@@ -7,6 +7,22 @@ export const serviceName = (c) =>
 
 /** @argument {Dash.Container} c */
 export const serviceLinks = (c) => {
+  // label value
+
+  const labelValue = c.Labels['dash.url']
+  if (labelValue) {
+    const url = new URL(labelValue)
+    return [
+      {
+        label: url.host,
+        host: url.host,
+        url: url.toString(),
+      },
+    ]
+  }
+
+  // orbstack domains
+
   let hosts = c.Labels['dev.orbstack.domains']?.split(',') ?? []
 
   if (!hosts.length) {
