@@ -119,10 +119,6 @@ func DockerVolumes(c echo.Context) error {
 	return c.JSON(http.StatusOK, volumes)
 }
 
-func Index(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/ui/")
-}
-
 func main() {
 	e := echo.New()
 
@@ -130,16 +126,13 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// e.GET("/", Index)
-
-	e.GET("/", Index)
-	e.GET("/health", Health)
+	e.Static("/", "static")
 	e.GET("/api/config", Config)
 	e.GET("/api/docker", DockerIndex)
 	e.GET("/api/docker/containers", DockerContainers)
 	e.GET("/api/docker/networks", DockerNetworks)
 	e.GET("/api/docker/volumes", DockerVolumes)
-	e.Static("/ui/", "static")
+	e.GET("/health", Health)
 
 	httpPort := os.Getenv("PORT")
 	if httpPort == "" {
