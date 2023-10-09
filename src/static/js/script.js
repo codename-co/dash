@@ -139,8 +139,20 @@ settings.setTheme(config.THEME)
 settings.setTitle(config.TITLE)
 icons.setup().then(update)
 
+let shiftKeyPressed = false
+window.addEventListener('keydown', (e) => {
+  if (e.shiftKey) {
+    shiftKeyPressed = true
+  }
+})
+window.addEventListener('keyup', () => {
+  shiftKeyPressed = false
+})
+
+const updateConditions = () => document.hasFocus() && !shiftKeyPressed
+
 setInterval(() => {
-  if (document.hasFocus()) {
+  if (updateConditions()) {
     update()
   }
 }, config.UPDATE_INTERVAL ?? 1000)
