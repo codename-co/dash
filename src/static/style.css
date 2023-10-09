@@ -246,31 +246,42 @@ section {
   }
 }
 
-.project.is-highlighting .is-highlighted::after {
-  content: '';
-  display: inline-block;
-  z-index: -1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  margin: 0 auto;
-  width: 8px;
-  margin-left: -8px;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background: #ffffff33;
+/*
+  Highlighting
+*/
+
+/* Hide non-eligible services */
+#render.is-highlighting .service:not(.is-highlighted) {
+  opacity: 0.2;
 }
-.project.is-highlighting .service:not(.is-highlighted) {
-  opacity: 0.3;
-}
-.project.is-highlighting .service.is-highlighted {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
+/* Hide non-eligible networks */
 .project .network {
   display: none;
 }
+/* Show eligible networks */
 .project.is-highlighting .network.is-highlighted {
   display: block;
+}
+/* Prepare a bordered line to link eligible services and networks */
+.project.is-highlighting .service.is-highlighted::before,
+.project.is-highlighting .service.is-highlighted ~ ::before {
+  content: '';
+  position: absolute;
+  left: -0.5em;
+  top: -8px;
+  bottom: -8px;
+  background: currentColor;
+  width: 3px;
+}
+/* First eligible service */
+.project.is-highlighting .service.is-highlighted::before {
+}
+/* Any subsequent service */
+.project.is-highlighting .service.is-highlighted ~ .service::before {
+}
+/* Any subsequent eligible service */
+.project.is-highlighting .service.is-highlighted ~ .service.is-highlighted::before {
+}
+/* Eligible networks */
+.project.is-highlighting .service.is-highlighted ~ .network.is-highlighted::before {
 }
