@@ -3,7 +3,15 @@ import icons from './icons.js'
 import network from './network.js'
 import { projectName } from './project.js'
 import search from './search.js'
-import { serviceIconName, serviceLinks, serviceName, serviceNetworks, serviceStatus, serviceTech } from './service.js'
+import {
+  serviceEnabled,
+  serviceIconName,
+  serviceLinks,
+  serviceName,
+  serviceNetworks,
+  serviceStatus,
+  serviceTech,
+} from './service.js'
 import settings, { isFetchAll } from './settings.js'
 
 /**
@@ -46,6 +54,7 @@ const update = async () => {
               <h3>${project}</h3>
               ${data.containers[project]
                 .sort((a, b) => sortStrings(serviceName(a), serviceName(b)))
+                .filter(serviceEnabled)
                 .filter(filteredContainers)
                 .map((c) => {
                   const link = serviceLinks(c)?.[0]

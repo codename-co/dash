@@ -211,6 +211,14 @@ services:
 
 Labels are to be passed to specific containers that need tweaking.
 
+#### `dash.enabled`
+
+Dash displays services by default. Unwanted services can be withdrawn.
+
+- Required: no
+- Type: `boolean`
+- Default: `true`
+
 #### `dash.icon`
 
 Dash auto-guesses from the image name the best matching icon from 2,700+ references of popular brands and services.

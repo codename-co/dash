@@ -1,4 +1,7 @@
 /** @argument {Dash.Container} c */
+export const serviceEnabled = (c) => c.Labels['dash.enabled'] !== 'false'
+
+/** @argument {Dash.Container} c */
 export const serviceName = (c) =>
   c.Labels['dash.name'] || c.Labels['com.docker.compose.service'] || c.Names?.[0]?.replace(/^\//, '')
 
