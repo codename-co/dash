@@ -219,6 +219,14 @@ Dash displays services by default. Unwanted services can be withdrawn.
 - Type: `boolean`
 - Default: `true`
 
+#### `dash.desc`
+
+Display a short description next to a service.
+
+- Required: no
+- Type: `string`
+- Default: not defined
+
 #### `dash.icon`
 
 Dash auto-guesses from the image name the best matching icon from 2,700+ references of popular brands and services.
