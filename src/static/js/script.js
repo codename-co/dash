@@ -34,7 +34,7 @@ const update = async () => {
 
   console.debug(data)
 
-  title.textContent = `dash · ${containersState.length} services`
+  meta_title.textContent = `${config.TITLE ?? 'dash'} · ${containersState.length} services`
 
   requestAnimationFrame(() => {
     render.innerHTML = `
@@ -136,6 +136,7 @@ network.setup()
 const config = await fetchConfig()
 console.log(config)
 settings.setTheme(config.THEME)
+settings.setTitle(config.TITLE)
 icons.setup().then(update)
 
 setInterval(() => {

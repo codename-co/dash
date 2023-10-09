@@ -83,9 +83,10 @@ export type ApiIndexResponse = Promise<{
 export type ApiContainersResponse = Promise<Container[]>
 export type ApiNetworksResponse = Promise<Network[]>
 export type ApiConfigResponse = Promise<{
-  PROJECT: string
-  THEME: string
-  UPDATE_INTERVAL: number
+  PROJECT?: string
+  THEME?: string
+  TITLE?: string
+  UPDATE_INTERVAL?: number
 }>
 export type Filters = {
   search: string
@@ -94,8 +95,9 @@ export type Filters = {
 export as namespace Dash
 
 declare global {
-  var title: HTMLElement
+  var meta_title: HTMLElement
   var render: HTMLElement
   var search: HTMLInputElement
+  var title: HTMLElement
   var toggleAll: HTMLInputElement
 }

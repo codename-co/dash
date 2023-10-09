@@ -7,6 +7,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     # environment:
+    #   TITLE: my dashboard
     #   PROJECT: ${COMPOSE_PROJECT_NAME}
     #   THEME: dark
     #   UPDATE_INTERVAL: 2000

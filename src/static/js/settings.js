@@ -12,8 +12,21 @@ export default {
     toggleAll.checked = isFetchAll()
   },
 
-  /** @argument {string} theme */
+  /** @argument {string | undefined} theme */
   setTheme: (theme = 'rainbow') => {
+    if (!theme) {
+      return
+    }
+
     document.querySelector('html')?.setAttribute('data-theme', theme)
+  },
+
+  /** @argument {string | undefined} title */
+  setTitle: (title) => {
+    if (!title) {
+      return
+    }
+
+    globalThis.title.innerText = title
   },
 }
