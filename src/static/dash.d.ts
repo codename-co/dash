@@ -82,12 +82,13 @@ export type ApiIndexResponse = Promise<{
 }>
 export type ApiContainersResponse = Promise<Container[]>
 export type ApiNetworksResponse = Promise<Network[]>
-export type ApiConfigResponse = Promise<{
+export type Config = {
   PROJECT?: string
   THEME?: string
   TITLE?: string
   UPDATE_INTERVAL?: number
-}>
+}
+export type ApiConfigResponse = Promise<Config>
 export type Filters = {
   search: string
 }

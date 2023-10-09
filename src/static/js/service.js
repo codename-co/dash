@@ -86,6 +86,3 @@ export const serviceIconName = (c) => {
       .filter(Boolean)[0] ?? image
   )
 }
-
-/** @argument {Dash.Container} c */
-export const serviceIcon = (c) => `https://cdn.simpleicons.org/${serviceIconName(c)}`

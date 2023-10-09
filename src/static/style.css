@@ -168,11 +168,14 @@ section {
   margin-bottom: 1rem;
   display: grid;
   grid-template-columns: 1em 2fr 1fr;
-  gap: 1em;
+  gap: 0.5em 1em;
   text-decoration: none;
 }
 .card[href]:hover {
   background: #77777736;
+}
+.card[href]:hover .links {
+  opacity: 1;
 }
 .card * {
   pointer-events: none;
@@ -199,9 +202,18 @@ section {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.card .desc {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+}
 .service .image {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
+  opacity: 0.8;
 }
 .service .status {
   grid-column: 3;
@@ -210,8 +222,9 @@ section {
 }
 .service .links {
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 3;
   text-align: right;
+  opacity: 0.8;
 }
 .service:hover .link {
   text-decoration: underline;
