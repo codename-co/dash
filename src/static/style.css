@@ -177,6 +177,9 @@ section {
 .card * {
   pointer-events: none;
 }
+.service {
+  transition: opacity 0.15s ease;
+}
 .service .icon {
   width: 20px;
   height: 20px;
