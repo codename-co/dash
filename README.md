@@ -139,6 +139,40 @@ services:
 
 </details>
 
+#### `TITLE`
+
+Override the displayed title.
+
+- Required: no
+- Type: `string`
+- Default: `dash`
+
+<details><summary>Example using <code>docker</code></summary>
+
+```shell
+docker run --rm -p 80:80 -v /var/run/docker.sock:/var/run/docker.sock \
+  -e TITLE="my dashboard" \
+  -it codename/dash
+```
+
+</details>
+
+<details><summary>Example using <code>docker compose</code></summary>
+
+```yaml
+services:
+  home:
+    image: codename/dash
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TITLE: my dashboard # 👈
+```
+
+</details>
+
 #### `UPDATE_INTERVAL`
 
 By default, dash updates the data every second. This behavior can be altered using the `UPDATE_INTERVAL` environment variable.
