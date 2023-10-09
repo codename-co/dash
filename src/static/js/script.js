@@ -4,6 +4,7 @@ import network from './network.js'
 import { projectName } from './project.js'
 import search from './search.js'
 import {
+  serviceDescription,
   serviceEnabled,
   serviceIconName,
   serviceLinks,
@@ -58,6 +59,8 @@ const update = async () => {
                 .filter(filteredContainers)
                 .map((c) => {
                   const link = serviceLinks(c)?.[0]
+                  const desc = serviceDescription(c)
+
                   return `
                     <a class="card service" data-network="${serviceNetworks(c)
                       .map((network) => network.NetworkID)
@@ -68,6 +71,15 @@ const update = async () => {
                       <span class="name">
                         ${serviceName(c)}
                       </span>
+                      ${
+                        desc
+                          ? `
+                      <span class="desc is-small">
+                        ${desc}
+                      </span>
+                            `
+                          : ''
+                      }
                       <span class="status">
                         ${serviceStatus(c)}
                       </span>

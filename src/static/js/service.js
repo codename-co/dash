@@ -6,6 +6,9 @@ export const serviceName = (c) =>
   c.Labels['dash.name'] || c.Labels['com.docker.compose.service'] || c.Names?.[0]?.replace(/^\//, '')
 
 /** @argument {Dash.Container} c */
+export const serviceDescription = (c) => c.Labels['dash.desc']
+
+/** @argument {Dash.Container} c */
 export const serviceLinks = (c) => {
   // label value
 
