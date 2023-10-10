@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -9,6 +11,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -35,48 +38,57 @@ func Config(c echo.Context) error {
 	return c.JSON(http.StatusOK, config)
 }
 
-func DockerIndex(c echo.Context) error {
-	cli := cli()
+// func DockerIndex(c echo.Context) error {
+// 	cli := cli()
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+// 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	networks, err := cli.NetworkList(context.Background(), types.NetworkListOptions{})
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	volumes, err := cli.VolumeList(context.Background(), volume.ListOptions{})
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	// swarm
+// 	config, err := cli.ConfigList(context.Background(), types.ConfigListOptions{})
+// 	if err != nil {
+// 		print()
+// 	}
+// 	services, err := cli.ServiceList(context.Background(), types.ServiceListOptions{})
+// 	if err != nil {
+// 		print()
+// 	}
+// 	tasks, err := cli.TaskList(context.Background(), types.TaskListOptions{})
+// 	if err != nil {
+// 		print()
+// 	}
+
+// 	return c.JSON(http.StatusOK, map[string]interface{}{
+// 		"config":     config,
+// 		"containers": containers,
+// 		"networks":   networks,
+// 		"services":   services,
+// 		"tasks":      tasks,
+// 		"volumes":    volumes.Volumes,
+// 	})
+// }
+
+func Networks() []types.NetworkResource {
+	networks, err := cli().NetworkList(context.Background(), types.NetworkListOptions{})
 	if err != nil {
 		panic(err)
-	}
-	networks, err := cli.NetworkList(context.Background(), types.NetworkListOptions{})
-	if err != nil {
-		panic(err)
-	}
-	volumes, err := cli.VolumeList(context.Background(), volume.ListOptions{})
-	if err != nil {
-		panic(err)
-	}
-	// swarm
-	config, err := cli.ConfigList(context.Background(), types.ConfigListOptions{})
-	if err != nil {
-		print()
-	}
-	services, err := cli.ServiceList(context.Background(), types.ServiceListOptions{})
-	if err != nil {
-		print()
-	}
-	tasks, err := cli.TaskList(context.Background(), types.TaskListOptions{})
-	if err != nil {
-		print()
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"config":     config,
-		"containers": containers,
-		"networks":   networks,
-		"services":   services,
-		"tasks":      tasks,
-		"volumes":    volumes.Volumes,
-	})
+	return networks
 }
 
-func DockerContainers(c echo.Context) error {
+func Containers(all bool) []types.Container {
 	containers, err := cli().ContainerList(context.Background(), types.ContainerListOptions{
-		All: c.QueryParams().Has("all"),
+		All: all,
 	})
 	if err != nil {
 		panic(err)
@@ -98,7 +110,13 @@ func DockerContainers(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, filteredContainers)
+	return filteredContainers
+}
+
+func DockerContainers(c echo.Context) error {
+	var all = c.QueryParams().Has("all")
+
+	return c.JSON(http.StatusOK, Containers(all))
 }
 
 func DockerNetworks(c echo.Context) error {
@@ -119,20 +137,81 @@ func DockerVolumes(c echo.Context) error {
 	return c.JSON(http.StatusOK, volumes)
 }
 
+var (
+	upgrader = websocket.Upgrader{}
+)
+
+type response struct {
+	Command string `json:"type"`
+	Data    any    `json:"data"`
+}
+
+func SendJSON(ws *websocket.Conn, command string, data any) []byte {
+	var out, _ = json.Marshal(&response{
+		Command: command,
+		Data:    data,
+	})
+	err := ws.WriteMessage(websocket.TextMessage, out)
+	if err != nil {
+		panic(err)
+	}
+
+	return out
+}
+
+func SocketHandler(c echo.Context) error {
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		return err
+	}
+	defer ws.Close()
+
+	for {
+		// 1. Read
+		_, message, err := ws.ReadMessage()
+		if err != nil {
+			c.Logger().Error(err)
+		}
+		fmt.Printf("%s\n", message)
+
+		// 2. Write
+		switch command := string(message); command {
+
+		case "containers":
+			SendJSON(ws, command, Containers(false))
+
+		case "containers-all":
+			SendJSON(ws, command, Containers(true))
+
+		case "networks":
+			SendJSON(ws, command, Networks())
+
+		default:
+			SendJSON(ws, "error", "{\"status\":\"error\"}")
+		}
+	}
+}
+
 func main() {
 	e := echo.New()
 
 	e.HideBanner = true
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Skipper: func(c echo.Context) bool {
+			// TODO: filtered access logs
+			return c.Path() == "/" || strings.HasPrefix(c.Path(), "/api") || strings.HasPrefix(c.Path(), "/ws")
+		},
+	}))
 	e.Use(middleware.Recover())
 
 	e.Static("/", "static")
 	e.GET("/api/config", Config)
-	e.GET("/api/docker", DockerIndex)
+	// e.GET("/api/docker", DockerIndex)
 	e.GET("/api/docker/containers", DockerContainers)
 	e.GET("/api/docker/networks", DockerNetworks)
 	e.GET("/api/docker/volumes", DockerVolumes)
 	e.GET("/health", Health)
+	e.GET("/ws", SocketHandler)
 
 	httpPort := os.Getenv("PORT")
 	if httpPort == "" {

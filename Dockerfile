@@ -1,4 +1,5 @@
-FROM golang:1-alpine AS builder
+### Build the go app
+FROM golang:1-alpine AS go-builder
 
 WORKDIR /app
 
@@ -9,9 +10,19 @@ COPY src/*.go .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /dash
 
 
+### Build the web app
+FROM node:20-alpine AS web-builder
+
+COPY src/static ./src
+
+RUN npx esbuild src/js/app.js --format=esm --bundle --minify --outfile=/build/app.js
+RUN npx esbuild src/style.css --bundle --minify --loader:.woff2=file --outfile=/build/style.css
+
+
+### Build the final image
 FROM scratch AS runner
 
-LABEL org.opencontainers.image.title "Dash"
+LABEL org.opencontainers.image.title "dash"
 LABEL org.opencontainers.image.description "A minimalist Docker landing page with services auto-discovery."
 LABEL org.opencontainers.image.url="https://github.com/codename-co/dash"
 LABEL org.opencontainers.image.documentation='https://github.com/codename-co/dash/wiki'
@@ -20,11 +31,19 @@ LABEL org.opencontainers.image.vendor='codename'
 LABEL org.opencontainers.image.authors='https://codename.co'
 LABEL org.opencontainers.image.licenses='MIT'
 
-COPY --from=builder /dash /dash
-
 ENTRYPOINT ["/dash"]
-
-COPY src/static ./static/
-
 ENV PORT 80
 EXPOSE $PORT
+
+# TODO: Handle health checks
+# COPY --from=alpine:3 /usr/bin/wget /bin/wget
+# HEALTHCHECK --interval=1s --timeout=1s --start-period=2s --retries=3 CMD [ "/bin/wget", "--spider", "http://0.0.0.0:${PORT}/health" ]
+
+COPY --from=go-builder /dash /dash
+
+COPY src/static/index.html ./static/
+COPY src/static/favicon.svg ./static/
+COPY src/static/js/[^app]* ./static/js/
+COPY --from=web-builder /build/app.js* ./static/js/
+COPY --from=web-builder /build/style.css* ./static/
+COPY --from=web-builder /build/*.woff2 ./static/

@@ -1,6 +1,7 @@
-import { fetchContainers, fetchNetworks } from './api.js'
+import { fetch } from './api.js'
 import { projectName } from './project.js'
 import { isFetchAll } from './settings.js'
+import state from './state.js'
 
 let shiftKeyPressed = false
 window.addEventListener('keydown', (e) => {
@@ -24,10 +25,11 @@ export const setMetaTitle = (message, config) => (meta_title.textContent = `${co
  * @argument {Function} template
  * @argument {Dash.Config} config
  */
-export const update = async (template, config) => {
-  const [containersState, networksState] = await Promise.all([fetchContainers(isFetchAll()), fetchNetworks()])
+export const update = (template, config) => {
+  fetch(isFetchAll() ? 'containers-all' : 'containers')
+  fetch('networks')
 
-  const projects = Array.from(containersState.reduce((acc, c) => acc.add(projectName(c)), new Set()))
+  const projects = Array.from(state.containers.reduce((acc, c) => acc.add(projectName(c)), new Set()))
 
   /** @type {Record<string, Dash.Container[]>} */
   const containersInit = {}
@@ -36,13 +38,11 @@ export const update = async (template, config) => {
   const networksInit = {}
 
   const data = {
-    containers: containersState.reduce(mapByProject, containersInit),
-    networks: networksState.reduce(mapByProject, networksInit),
+    containers: state.containers.reduce(mapByProject, containersInit),
+    networks: state.networks.reduce(mapByProject, networksInit),
   }
 
-  console.debug(data)
-
-  setMetaTitle(`${containersState.length} services`, config)
+  setMetaTitle(`${state.containers.length} services`, config)
 
   requestAnimationFrame(() => {
     render.innerHTML = template(projects, data)

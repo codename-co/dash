@@ -14,7 +14,6 @@ export default {
         const items = render.querySelectorAll(
           networkIds?.map((id) => `.project > .card[data-network|="${id}"]`).join(', ') ?? ''
         )
-        console.debug(networkIds, items)
         ;[...items].forEach((item) => {
           item.classList.add('is-highlighted')
           item.parentElement?.classList.add('is-highlighting')

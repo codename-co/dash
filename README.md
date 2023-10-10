@@ -11,7 +11,7 @@ Drop-in minimalist Docker landing page with services auto-discovery.
 ## Features
 
 - 🐳 **Automatic** Docker services discovery
-- ⚡ **Blazing-fast**
+- ⚡ **Blazing-fast** performances
 - 🪶 **Extra light** Docker image (7MB)
 - 🛡️ **Robust** typed codebase
 - 🔄 **Responsive** user interface

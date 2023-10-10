@@ -1,13 +1,14 @@
+import state from './state.js'
+
 export default {
   /**
-   * @param {Dash.Filters} filters
    * @param {function} update
    */
-  setup: (filters, update) => {
+  setup: (update) => {
     const event = new Event('searching')
 
     search.addEventListener('searching', () => {
-      filters.search = search.value
+      state.search = search.value
       update()
     })
 

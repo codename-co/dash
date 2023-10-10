@@ -6,7 +6,10 @@ export const serviceName = (c) =>
   c.Labels['dash.name'] || c.Labels['com.docker.compose.service'] || c.Names?.[0]?.replace(/^\//, '')
 
 /** @argument {Dash.Container} c */
-export const serviceDescription = (c) => c.Labels['dash.desc']
+export const serviceSortableName = (c) => `${serviceName(c)}-${serviceReplicaNumber(c)}`
+
+/** @argument {Dash.Container} c */
+export const serviceDescription = (c) => c.Labels['dash.desc'] ?? ''
 
 /** @argument {Dash.Container} c */
 export const serviceLinks = (c) => {
@@ -86,3 +89,9 @@ export const serviceIconName = (c) => {
       .filter(Boolean)[0] ?? image
   )
 }
+
+/** @argument {Dash.Container} c */
+export const serviceReplicaNumber = (c) => c.Labels['com.docker.compose.container-number']
+
+/** @argument {Dash.Container} c */
+export const serviceIsReplica = (c) => serviceReplicaNumber(c) !== '1'

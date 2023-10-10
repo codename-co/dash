@@ -1,14 +1,48 @@
-const api = (path = '/') => `/api${path}`
-
-/** @returns {Dash.ApiIndexResponse} */
-export const fetchIndex = async () => (await fetch(api('/'))).json()
-
-/** @returns {Dash.ApiContainersResponse} */
-export const fetchContainers = async (all = false) =>
-  (await fetch(api(`/docker/containers${all ? '?all' : ''}`))).json()
-
-/** @returns {Dash.ApiNetworksResponse} */
-export const fetchNetworks = async () => (await fetch(api('/docker/networks'))).json()
+import state from './state.js'
 
 /** @returns {Dash.ApiConfigResponse} */
-export const fetchConfig = async () => (await fetch(api('/config'))).json()
+export const fetchConfig = async () => (await globalThis.fetch('/api/config')).json()
+
+/** @type {WebSocket} */
+let ws
+
+/**
+ * Setup the WebSocket and wait for it to be ready.
+ */
+export const setupWS = async () =>
+  new Promise((resolve) => {
+    ws = new WebSocket(`ws://${location.host}/ws`)
+
+    ws.addEventListener('open', () => {
+      console.debug('WebSocket initialized')
+      resolve(true)
+    })
+
+    ws.addEventListener('message', (event) => {
+      /** @type {Dash.WSResponse} */
+      const { type, data } = JSON.parse(event.data)
+
+      switch (type) {
+        case 'containers':
+          state.containers = data
+          break
+
+        case 'containers-all':
+          state.containers = data
+          break
+
+        case 'networks':
+          state.networks = data
+          break
+      }
+    })
+  })
+
+/** @argument {keyof typeof Dash.MESSAGE} message */
+export const fetch = (message) => {
+  try {
+    ws.send(message)
+  } catch (e) {
+    console.error(e)
+  }
+}

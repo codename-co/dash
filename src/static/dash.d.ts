@@ -76,12 +76,12 @@ export type Network = {
   Containers: {}
   Options: Record<string, string>
 } & Labelled
-export type ApiIndexResponse = Promise<{
-  containers: Container[]
-  networks: Network[]
-}>
-export type ApiContainersResponse = Promise<Container[]>
-export type ApiNetworksResponse = Promise<Network[]>
+// export type ApiIndexResponse = Promise<{
+//   containers: Container[]
+//   networks: Network[]
+// }>
+// export type ApiContainersResponse = Promise<Container[]>
+// export type ApiNetworksResponse = Promise<Network[]>
 export type Config = {
   PROJECT?: string
   THEME?: string
@@ -89,7 +89,29 @@ export type Config = {
   UPDATE_INTERVAL?: number
 }
 export type ApiConfigResponse = Promise<Config>
-export type Filters = {
+export enum MESSAGE {
+  'containers',
+  'containers-all',
+  'networks',
+}
+export type MessageKey = keyof typeof MESSAGE
+export type WSResponse =
+  | {
+      type: 'containers'
+      data: Container[]
+    }
+  | {
+      type: 'containers-all'
+      data: Container[]
+    }
+  | {
+      type: 'networks'
+      data: Network[]
+    }
+
+export type State = {
+  containers: Container[]
+  networks: Network[]
   search: string
 }
 

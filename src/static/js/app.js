@@ -1,4 +1,4 @@
-import { fetchConfig } from './api.js'
+import { fetchConfig, setupWS } from './api.js'
 import icons from './icons.js'
 import network from './network.js'
 import { update as renderUpdate, updateConditions } from './render.js'
@@ -7,13 +7,17 @@ import {
   serviceDescription,
   serviceEnabled,
   serviceIconName,
+  serviceIsReplica,
   serviceLinks,
   serviceName,
   serviceNetworks,
+  serviceReplicaNumber,
+  serviceSortableName,
   serviceStatus,
   serviceTech,
 } from './service.js'
 import settings from './settings.js'
+import state from './state.js'
 
 /**
  * @argument {string[]} projects]
@@ -27,50 +31,63 @@ const appTemplate = (projects, data) =>
       <div class="project">
         <h3>${project}</h3>
         ${data.containers[project]
-          .sort((a, b) => sortStrings(serviceName(a), serviceName(b)))
+          .sort((a, b) => sortStrings(serviceSortableName(a), serviceSortableName(b)))
           .filter(serviceEnabled)
           .filter(filteredContainers)
           .map((c) => {
             const link = serviceLinks(c)?.[0]
+            const url = !serviceIsReplica(c) ? link?.url : ''
             const desc = serviceDescription(c)
+            const dataNetwork = serviceNetworks(c)
+              .map((network) => network.NetworkID)
+              .join('-')
 
             return `
-              <a class="card service" data-network="${serviceNetworks(c)
-                .map((network) => network.NetworkID)
-                .join('-')}" ${link?.url ? `href="${link?.url}"` : ''} target="_blank">
-                <span class="icon">
-                  ${icons.get(serviceIconName(c))}
-                </span>
-                <span class="name">
+              <a class="card service ${serviceIsReplica(c) ? 'is-replica' : ''}" data-network="${dataNetwork}" ${
+              url ? `href="${url}"` : ''
+            } target="_blank">
+                <span class="name ${serviceIsReplica(c) ? 'name-fullwidth is-small' : ''}">
                   ${serviceName(c)}
-                </span>
-                ${
-                  desc
-                    ? `
-                <span class="desc is-small">
-                  ${desc}
-                </span>
+                  ${
+                    serviceIsReplica(c)
+                      ? `
+                        <span class="image is-small">
+                          (${serviceReplicaNumber(c)})
+                        </span>
                       `
-                    : ''
-                }
+                      : ''
+                  }
+                </span>
                 <span class="status">
                   ${serviceStatus(c)}
                 </span>
-                <span class="image is-small">
-                  ${serviceTech(c)}
+                ${
+                  serviceIsReplica(c)
+                    ? ''
+                    : `
+                      <span class="icon">
+                        ${icons.get(serviceIconName(c))}
+                      </span>
+                      <span class="image is-small">
+                        ${serviceTech(c)}
+                      </span>
+                      ${
+                        desc
+                          ? `
+                            <span class="desc is-small">
+                              ${desc}
+                            </span>
+                            `
+                          : ''
+                      }
+                      <span class="links is-small">
+                        ${serviceLinks(c)
+                          .map((link) => `<span class="link">${link.label}</span>`)
+                          .join('&nbsp;')}
+                      </span>
+                    `
+                }
                 </span>
-                <span class="links is-small">
-                  ${serviceLinks(c)
-                    .map((link) => `<span class="link">${link.label}</span>`)
-                    .join('&nbsp;')}
-                </span>
-                <!--
-                <span class="networks is-small">
-                  ${serviceNetworks(c)
-                    .map((network) => network.name)
-                    .join('&nbsp;')}
-                </span>
-                -->
               </a>
             `
           })
@@ -83,6 +100,11 @@ const appTemplate = (projects, data) =>
               <span class="card network" data-network="${n.Id}">
                 <span class="name is-small">
                   ${n.Name.replace(new RegExp(`^${project}_`), '')} network
+                  ·
+                  ${n.Scope}
+                  ${n.Driver}
+                  ·
+                  ${n.IPAM.Config.map((c) => c.Subnet).join(' ')}
                 </span>
                 <!--
                 <span class="status is-small">
@@ -100,7 +122,10 @@ const appTemplate = (projects, data) =>
 
 /** @argument {Dash.Container} c */
 const filteredContainers = (c) =>
-  !filters.search || serviceName(c).includes(filters.search) || c.Image.includes(filters.search)
+  !state.search ||
+  serviceName(c).includes(state.search) ||
+  c.Image.includes(state.search) ||
+  serviceDescription(c).includes(state.search)
 
 /**
  * @argument {string} stra
@@ -113,21 +138,15 @@ const sortStrings = (stra, strb) => {
   return a < b ? -1 : a > b ? 1 : 0
 }
 
-/** @type {Dash.Filters} */
-const filters = {
-  search: '',
-}
-
-renderUpdate(appTemplate, {})
+await setupWS()
 
 const config = await fetchConfig()
-console.log(config)
+console.debug({ config })
 const update = () => renderUpdate(appTemplate, config)
-search.setup(filters, update)
-settings.setup(update)
+update()
+search.setup(update)
+settings.setup(update, config)
 network.setup()
-settings.setTheme(config.THEME)
-settings.setTitle(config.TITLE)
 icons.setup().then(update)
 
 setInterval(() => {
