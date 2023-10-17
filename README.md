@@ -6,7 +6,7 @@ Drop-in minimalist Docker landing page with services auto-discovery.
 
 <img title="dash screenshot" src="https://github.com/codename-co/dash/raw/main/docs/screens/dash-theme-rainbow.webp" width="800px" style="max-width: 100%" />
 
-[https://img.shields.io/docker/pulls/codename/dash?style=for-the-badge](https://hub.docker.com/r/codename/dash)
+[![](https://img.shields.io/docker/pulls/codename/dash?style=for-the-badge)](https://hub.docker.com/r/codename/dash)
 
 </center>
 
