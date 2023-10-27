@@ -12,7 +12,7 @@ let ws
 export const setupWS = async () =>
   new Promise((resolve) => {
     const protocol = globalThis.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const ws = new WebSocket(`${protocol}://${location.host}/ws`)
+    const ws = new WebSocket(`${protocol}//${location.host}/ws`)
 
     ws.addEventListener('open', () => {
       console.debug('WebSocket initialized')
