@@ -4,12 +4,36 @@ services:
   dash:
     build:
       context: .
+      dockerfile: Dockerfile.watch
+    pull_policy: build
+    ports:
+      - 8080:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    # environment:
-    #   TITLE: my dashboard
-    #   PROJECT: ${COMPOSE_PROJECT_NAME}
-    #   THEME: dark
-    #   UPDATE_INTERVAL: 2000
+    environment:
+      TITLE: my dashboard
+      PROJECT: ${COMPOSE_PROJECT_NAME}
+      # THEME: dark
+      # UPDATE_INTERVAL: 2000
     labels:
       dev.orbstack.domains: dash.local
+    develop:
+      watch:
+        #  api
+        - action: rebuild
+          path: ./src/api
+        #  static
+        - action: sync
+          path: ./src/static
+          target: ./static
+          ignore:
+            - js
+        # js
+        - action: rebuild
+          path: ./src/static/js
+
+  # a random service
+  whoami:
+    image: containous/whoami
+    labels:
+      dev.orbstack.domains: who.local

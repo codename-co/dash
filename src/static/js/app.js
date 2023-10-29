@@ -1,4 +1,4 @@
-import { fetchConfig, setupWS } from './api.js'
+import { fetchConfig } from './api.js'
 import icons from './icons.js'
 import network from './network.js'
 import { update as renderUpdate, updateConditions } from './render.js'
@@ -138,10 +138,13 @@ const sortStrings = (stra, strb) => {
   return a < b ? -1 : a > b ? 1 : 0
 }
 
-await setupWS()
-
+// fetch configuration
+console.time('Fetched configuration in')
 const config = await fetchConfig()
-console.debug({ config })
+console.timeEnd('Fetched configuration in')
+console.dir(config)
+
+// update
 const update = () => renderUpdate(appTemplate, config)
 update()
 search.setup(update)

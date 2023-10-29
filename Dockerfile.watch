@@ -22,7 +22,7 @@ RUN npx esbuild src/js/app.js --format=esm --bundle --minify --outfile=/build/ap
 
 
 ### Build the final image
-FROM scratch AS runner
+FROM alpine AS runner
 
 LABEL org.opencontainers.image.title "dash"
 LABEL org.opencontainers.image.description "A minimalist Docker landing page with services auto-discovery."

@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/docker/docker v24.0.6+incompatible
-	github.com/gorilla/websocket v1.5.0
 	github.com/labstack/echo/v4 v4.11.1
 )
 

@@ -26,6 +26,7 @@ export const setMetaTitle = (message, config) => (meta_title.textContent = `${co
  * @argument {Dash.Config} config
  */
 export const update = (template, config) => {
+  console.clear()
   fetch(isFetchAll() ? 'containers-all' : 'containers')
   fetch('networks')
 
