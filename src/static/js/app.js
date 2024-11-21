@@ -104,7 +104,7 @@ const appTemplate = (projects, data) =>
                   ${n.Scope}
                   ${n.Driver}
                   ·
-                  ${n.IPAM.Config.map((c) => c.Subnet).join(' ')}
+                  ${n.IPAM.Config?.map((c) => c.Subnet).join(' ')}
                 </span>
                 <!--
                 <span class="status is-small">
