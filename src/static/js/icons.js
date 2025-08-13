@@ -4,7 +4,7 @@ let simpleIcons
 export default {
   setup: async () => {
     // @ts-ignore
-    simpleIcons = await import('https://cdn.jsdelivr.net/npm/simple-icons@13.17/+esm')
+    simpleIcons = await import('https://cdn.jsdelivr.net/npm/simple-icons@15.10.0/+esm')
   },
 
   /** @argument {string} slug */
